@@ -1,0 +1,35 @@
+#include<iostream>
+#include <algorithm>
+
+//冒泡排序法（升序）
+//主要变量i:循环变量，表示未排序部分的开头元素，从数组开头向末尾移动
+//主要变量j:循环变量，表示对未排序的部分两两比较，从数组末尾开始，减少到i+1结束
+
+using namespace std;
+
+int bubblesort(int A[],int N){
+    int times = 0;
+    for(int i=0;i<N;i++){
+        for(int j=N-1;j>=i+1;j--){
+            if(A[j]<A[j-1]) {
+                swap(A[j], A[j - 1]);
+                times++;
+            }
+        }
+    }
+    return times;
+}
+
+int main(){
+    int N;
+    cin>>N;
+    int array[N];
+    for (int i=0;i<N;i++){
+        cin>>array[i];
+    }
+    int times = bubblesort(array,N);
+    for(int i=0;i<N;i++)
+        cout<<array[i]<<" ";
+    cout<<endl<<times;
+    return 0;
+}
