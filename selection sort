@@ -1,0 +1,39 @@
+#include<iostream>
+#include <algorithm>
+
+
+//选择排序法（升序）
+//i:循环变量，表示未排序部分的开头元素，从数组开头向末尾移动
+//minj:各轮循环中，从i到N-1中最小元素的位置
+//j:循环变量，用来查找未排序部分最小值的位置
+
+using namespace std;
+
+int selectionsort(int A[], int N){
+    int temp;
+    int times = 0;
+    for (int i=0;i<N;i++){
+        int minj = i;
+        for (int j=i+1;j<N;j++){
+            if(A[j]<A[minj])
+                minj = j;
+        }
+        if(minj!=i)
+            times++;
+        temp = A[i]; A[i] = A[minj]; A[minj] = temp;
+    }
+    return times;
+}
+
+int main(){
+    int N;
+    cin>>N;
+    int array[N];
+    for(int i=0;i<N;i++)
+        cin>>array[i];
+    int times = selectionsort(array,N);
+    for (int i=0;i<N;i++)
+        cout<<array[i]<<" ";
+    cout<<endl<<times;
+    return 0;
+}
