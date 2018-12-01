@@ -1,0 +1,72 @@
+#include <iostream>
+#include <algorithm>
+
+//Transitive closure
+
+using namespace std;
+
+int main(){
+    int n;
+    cout<<"请输入矩阵的行数或列数：\n";
+    cin>>n;
+    int matrix[n][n];
+    memset(matrix,0, sizeof(matrix));
+    cout<<"请按行输入整个关系矩阵（每行的各个元素用空格隔开）:"<<endl;
+    for (int i=0;i<n;i++){
+        for (int j=0;j<n;j++)
+            cin>>matrix[i][j];
+    }
+    int temp_matr1[n][n];
+    int temp_matr2[n][n];
+    int temp_matr3[n][n];
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            temp_matr1[i][j] = matrix[i][j];
+            temp_matr2[i][j] = matrix[i][j];
+            temp_matr3[i][j] = matrix[i][j];
+        }
+    }
+    //求关系的自反闭包
+    for (int i=0;i<n;i++){
+        for (int j=0;j<n;j++)
+            if(i == j)
+                temp_matr1[i][j] = 1;
+    }
+    cout<<"关系的自反闭包为："<<endl;
+    for(int i=0;i<n;i++){
+        for (int j=0;j<n;j++)
+            cout<<temp_matr1[i][j]<<" ";
+        cout<<endl;
+    }
+    cout<<endl;
+    //求关系的对称闭包
+    for(int i=0;i<n;i++){
+        for (int j=0;j<n;j++){
+            temp_matr2[i][j] = matrix[i][j]||matrix[j][i];
+        }
+    }
+    cout<<"关系的对称闭包为："<<endl;
+    for(int i=0;i<n;i++){
+        for (int j=0;j<n;j++)
+            cout<<temp_matr2[i][j]<<" ";
+        cout<<endl;
+    }
+    cout<<endl;
+    for(int k=0;k<n;k++){
+        for(int i=0;i<n;i++){
+            for (int j=0;j<n;j++)
+                temp_matr3[i][j] = (matrix[i][j])|(matrix[i][k]&matrix[k][j]);
+        }
+        for(int i=0;i<n;i++){
+            for(int j=0;j<n;j++)
+                matrix[i][j] = temp_matr3[i][j];
+        }
+    }
+    cout<<"关系的传递闭包为："<<endl;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++)
+            cout<<matrix[i][j]<<" ";
+        cout<<endl;
+    }
+    return 0;
+}
