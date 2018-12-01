@@ -1,0 +1,166 @@
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+//Lulerian path and circuit
+
+const int MAX = 100;
+int adj_mat[MAX][MAX];
+void Fleury(int ver,int start);
+bool IsNotBridge(int dim);
+
+int main() {
+    int ver_num,path_num;
+    cout<<"请输入graph的顶点数和边数：";
+    cin>>ver_num>>path_num;
+    memset( adj_mat, 0, sizeof(adj_mat) );//memset函数
+    int beg,end;
+    cout<<"请输入无向边的起点与终点：";
+    for (int i=0;i<path_num;i++){
+        cin>>beg>>end;
+        adj_mat[beg-1][end-1] = adj_mat[end-1][beg-1] = 1;
+    }
+    int temp[ver_num];
+    for(int i=0;i<ver_num;i++){
+        int temp1 = 0;
+        for (int j=0;j<ver_num;j++){
+            if(adj_mat[i][j]!=0) {
+                temp1++;
+            }
+        }
+        temp[i] = temp1;
+    }
+
+    int odd_ver=0;
+    int even_ver=0;
+    int start = 0;
+    for(int i=0;i<ver_num;i++){
+        if(temp[i]%2 == 0)
+            even_ver++;
+        else{
+            odd_ver++;
+            start = i;
+        }
+    }
+    if(odd_ver==0)
+        Fleury(ver_num,0);
+    else if(odd_ver==2)
+        Fleury(ver_num,start);
+    else
+        cout<<"There is no Eulerian path and circuit"<<endl;
+    return 0;
+}
+
+void Fleury(int ver,int start){
+    /*for(int i=0;i<ver;i++){
+        for (int j=0;j<ver;j++){
+            cout<<adj_mat[i][j]<<" ";
+        }
+        cout<<endl;
+    }*/
+    int num = 0;
+    int next = 0;
+    for(int i=0;i<ver;i++){
+        if(adj_mat[start][i] != 0){
+            num++;
+            next = i;
+        }
+    }
+    if(num==1){
+        cout<<start+1<<"->"<<next+1<<" ";
+        adj_mat[start][next] = adj_mat[next][start] = 0;
+        Fleury(ver,next);
+    }
+    if(num>1){                      //If there are more than one adjacent vertices,
+        for(int i=0;i<ver;i++){     //we consider an adjacent v only if edge start-next is not a bridge.
+            if(adj_mat[start][i] != 0){
+                next = i;
+                adj_mat[start][i] = adj_mat[i][start] = 0;
+                if(IsNotBridge(ver)){
+                    cout<<start+1<<"->"<<next+1<<" ";
+                    Fleury(ver,next);
+                }else{
+                    adj_mat[start][i] = adj_mat[i][start] = 1;
+                    continue;
+                }
+            }
+        }
+    }
+    if(num == 0)
+        return;
+}
+
+bool IsNotBridge(int dim){
+    int temp_array[dim][dim];
+    for (int i=0;i<dim;i++){
+        for(int j=0;j<dim;j++)
+            temp_array[i][j] = adj_mat[i][j];
+    }
+    /*for(int i=0;i<dim;i++){
+        for(int j=0;j<dim;j++)
+            cout<<temp_array[i][j]<<" ";
+        cout<<endl;
+    }*/
+    int **temp = new int *[dim];
+    for(int i=0;i<dim;i++)
+        temp[i]=new int[dim];
+
+    for(int k=0;k<dim;k++)
+    {
+        for(int i=0;i<dim;i++)
+        {
+            for(int j=0;j<dim;j++)
+                temp[i][j]=(temp_array[i][j])||(temp_array[i][k]&temp_array[k][j]);
+        }
+        for(int i=0;i<dim;i++)
+            for(int j=0;j<dim;j++)
+                temp_array[i][j]=temp[i][j];
+    }
+    for (int i=0;i<dim;i++)
+    {
+        for (int j=0;j<dim;j++)
+        {
+            if (temp_array[i][j]==0)
+                return false;
+        }
+    }
+    return true;
+}
+
+RESULT:
+
+请输入graph的顶点数和边数：8 12
+请输入无向边的起点与终点：1 2
+1 3
+2 3
+2 7
+3 7
+2 4
+3 5
+4 5
+5 6
+6 4
+4 8
+5 8
+1->2 2->3 3->5 5->4 4->6 6->5 5->8 8->4 4->2 2->7 7->3 3->1
+
+//Some important tips and mistakes:
+C++变量与数组必须初始化：
+cin>>n;
+int array[n][n];
+int array2[n];
+此类数组若不初始化，输出会产生问题；
+int array3[3][3];
+int array4[3];
+这一类数组会默认初始化为0，但是在程序运行中确定大小的数组不会。
+若在整个文件中需要操作一个数组或变量，可以放在main（）函数外，这样每一个操作都可以更该数组。
+1.char a[3][3];
+2.memset(a,0,sizeof(a));
+这就是二维数组初始化的一个方式。
+
+//memset 函数：
+void *memset(void *s, int ch, size_t n);
+函数解释：将s中当前位置后面的n个字节 （typedef unsigned int size_t ）用 ch 替换并返回 s 。
+memset：作用是在一段内存块中填充某个给定的值，它是对较大的结构体或数组进行清零操作的一种最快方法 [1]  。
+memset()函数原型是extern void *memset(void *buffer, int c, int count) buffer：为指针或是数组,c：是赋给buffer的值,count：是buffer的长度.
